@@ -11,6 +11,10 @@ class PlacesController < ApplicationController
     @place = Place.find(params[:id])
   end
 
+  def edit
+    @place = Place.find(params[:id])    
+  end
+
   def create
     @place = Place.new(place_params)
     if @place.save
@@ -21,9 +25,18 @@ class PlacesController < ApplicationController
     end
   end
 
+  def update
+    @place = Place.find(params[:id])
+    if @place.update_attributes(place_params)
+      flash[:success] = 'Updated'
+      redirect_to place_path(@place)
+    else
+      render 'edit'
+    end
+  end
   private
 
   def place_params
-    params.require(:place).permit(:title, :address, :user_id, :latitude, :longitude)
+    params.require(:place).permit(:title, :address, :user_id, :latitude, :longitude, green_tees_attributes: [:id, :longitude, :latitude, :_destroy])
   end
 end

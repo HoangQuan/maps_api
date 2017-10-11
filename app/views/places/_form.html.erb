@@ -13,11 +13,6 @@
     <fieldset class="form-group">
       <%= f.label :address, 'Address' %>
       <%= f.text_field :address, class: "form-control" %>
-    </fieldset>
-
-    <fieldset class="form-group">
-      <%= f.label :address, 'Address' %>
-      <%= f.text_field :address, class: "form-control" %>
       <small class="text-muted">You can also enter IP. Your IP is <%= request.ip %></small>
     </fieldset>
 
@@ -41,7 +36,16 @@
       <div class="col-sm-4">
         <a href="#" id="find-on-map" class="btn btn-info btn-sm">Find on the map</a>
       </div>
+    </div>
+    <div>
 
+        <% @place.green_tees.each_with_index do |green_tee, i| %>
+            <%= f.fields_for :green_tees, green_tee do |builder| %>
+                <%= render 'green_tee_fields', f: builder, child_index: i %>
+            <% end %>
+        <% end %>
+        <%= link_to_add_fields 'Add Tee', f, :green_tees %>
+    </div>
     <%= f.submit 'Add!', class: 'btn btn-primary' %>
   <% end %>
 </div>
@@ -49,6 +53,8 @@
 <div class="#map-container">
   <div class="card-block">
     <div id="map"></div>
+
+    <input type="text" name="map-address", id="map_address" class="form-control">
   </div>
 </div>
 <script>
@@ -61,8 +67,8 @@
     if ($('#map').size() > 0) {
       map = new google.maps.Map(document.getElementById('map'), {
         center: {
-          lat: -34.397,
-          lng: 150.644
+          lat: 35.652832,
+          lng: 139.839478
         },
         mapTypeId: 'satellite',
         zoom: 14
@@ -71,15 +77,77 @@
         placeMarkerAndPanTo(e.latLng, map);
         return updateFields(e.latLng);
       });
-      return $('#find-on-map').click(function(e) {
+      $('#find-on-map').click(function(e) {
         e.preventDefault();
         return placeMarkerAndPanTo({
           lat: parseInt(lat_field.val(), 10),
           lng: parseInt(lng_field.val(), 10)
         }, map);
       });
+
+
+      // Create the search box and link it to the UI element.
+      var input = document.getElementById('map_address');
+      var searchBox = new google.maps.places.SearchBox(input);
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+      // Bias the SearchBox results towards current map's viewport.
+      map.addListener('bounds_changed', function() {
+        searchBox.setBounds(map.getBounds());
+      });
+
+      var markers = [];
+      // Listen for the event fired when the user selects a prediction and retrieve
+      // more details for that place.
+      searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+
+        if (places.length == 0) {
+          return;
+        }
+
+        // Clear out the old markers.
+        markers.forEach(function(marker) {
+          marker.setMap(null);
+        });
+        markers = [];
+
+        // For each place, get the icon, name and location.
+        var bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+          if (!place.geometry) {
+            console.log("Returned place contains no geometry");
+            return;
+          }
+          var icon = {
+            url: place.icon,
+            size: new google.maps.Size(71, 71),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(25, 25)
+          };
+
+          // Create a marker for each place.
+          markers.push(new google.maps.Marker({
+            map: map,
+            // icon: icon,
+            title: place.name,
+            position: place.geometry.location
+          }));
+
+          if (place.geometry.viewport) {
+            // Only geocodes have viewport.
+            bounds.union(place.geometry.viewport);
+          } else {
+            bounds.extend(place.geometry.location);
+          }
+        });
+        map.fitBounds(bounds);
+      });
     }
   };
+
+
   placeMarkerAndPanTo = function(latLng, map) {
     var marker;
     // while (markersArray.length) {
@@ -113,9 +181,24 @@
     return lng_field.val(latLng.lng());
   };
 
-  test = function() {
-    console.log('test');
-  };
-
   google.maps.event.addDomListener(window, 'load', initMap);
+
+
+  // Add field
+
+  $("form").on("click", ".remove_fields", function(event) {
+    $(this).closest("fieldset").find("input[type=hidden]").val("1");
+    $(this).closest("fieldset").hide();
+    return event.preventDefault();
+  });
+
+  $("form").on("click", ".add_fields", function(event) {
+    var regexp, time;
+    regexp = void 0;
+    time = void 0;
+    time = new Date().getTime();
+    regexp = new RegExp($(this).data("id"), "g");
+    $(this).before($(this).data("fields").replace(regexp, time));
+    return event.preventDefault();
+  });
 </script>
