@@ -52,102 +52,115 @@
 
 <div class="#map-container">
   <div class="card-block">
-    <div id="map"></div>
+    <div id="map" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>"></div>
 
     <input type="text" name="map-address", id="map_address" class="form-control">
   </div>
 </div>
 <script>
-  var lat_field, lng_field, markersArray, placeMarkerAndPanTo, updateFields;
+  var lat_field, lng_field, markersArray, placeMarkerAndPanTo, updateFields, bounds;
   markersArray = [];
   lat_field = $('#place_latitude');
   lng_field = $('#place_longitude');
-  function initMap() {
-    var map;
-    if ($('#map').size() > 0) {
-      map = new google.maps.Map(document.getElementById('map'), {
-        center: {
-          lat: 35.652832,
-          lng: 139.839478
-        },
-        mapTypeId: 'satellite',
-        zoom: 14
-      });
-      map.addListener('click', function(e) {
-        placeMarkerAndPanTo(e.latLng, map);
-        return updateFields(e.latLng);
-      });
-      $('#find-on-map').click(function(e) {
-        e.preventDefault();
-        return placeMarkerAndPanTo({
-          lat: parseInt(lat_field.val(), 10),
-          lng: parseInt(lng_field.val(), 10)
-        }, map);
-      });
 
-
-      // Create the search box and link it to the UI element.
-      var input = document.getElementById('map_address');
-      var searchBox = new google.maps.places.SearchBox(input);
-      map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-      // Bias the SearchBox results towards current map's viewport.
-      map.addListener('bounds_changed', function() {
-        searchBox.setBounds(map.getBounds());
-      });
-
-      var markers = [];
-      // Listen for the event fired when the user selects a prediction and retrieve
-      // more details for that place.
-      searchBox.addListener('places_changed', function() {
-        var places = searchBox.getPlaces();
-
-        if (places.length == 0) {
-          return;
-        }
-
-        // Clear out the old markers.
-        markers.forEach(function(marker) {
-          marker.setMap(null);
+  renderMap = function(){
+    function initMap() {
+      var map;
+      if ($('#map').size() > 0) {
+        var center = {lat: $("#map").data('lat'), lng: $("#map").data('lon')}
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: center,
+          mapTypeId: 'satellite',
+          zoom: 14
         });
-        markers = [];
 
-        // For each place, get the icon, name and location.
-        var bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
-          if (!place.geometry) {
-            console.log("Returned place contains no geometry");
+        bounds = map.getBounds();
+
+        // click on map to make marker
+        // map.addListener('click', function(e) {
+        //   placeMarkerAndPanTo(e.latLng, map);
+        //   return updateFields(e.latLng);
+        // });
+
+        $('#find-on-map').click(function(e) {
+          e.preventDefault();
+
+          if (lat_field.val() != '' && lng_field.val() != '') {
+            var LatLngBounds_test = {
+              lat: parseFloat(lat_field.val()),
+              lng: parseFloat(lng_field.val())
+            }
+          } else {
+            var LatLngBounds_test = getRandom_marker(map.getBounds());
+          }
+          handUpdateFields(LatLngBounds_test.lat, LatLngBounds_test.lng);
+          return placeMarkerAndPanTo(LatLngBounds_test, map);
+        });
+
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('map_address');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
             return;
           }
-          var icon = {
-            url: place.icon,
-            size: new google.maps.Size(71, 71),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(25, 25)
-          };
 
-          // Create a marker for each place.
-          markers.push(new google.maps.Marker({
-            map: map,
-            // icon: icon,
-            title: place.name,
-            position: place.geometry.location
-          }));
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
 
-          if (place.geometry.viewport) {
-            // Only geocodes have viewport.
-            bounds.union(place.geometry.viewport);
-          } else {
-            bounds.extend(place.geometry.location);
-          }
+          // For each place, get the icon, name and location.
+          bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              // icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
         });
-        map.fitBounds(bounds);
-      });
-    }
+      }
+    };
+
+    google.maps.event.addDomListener(window, 'load', initMap);
   };
-
-
   placeMarkerAndPanTo = function(latLng, map) {
     var marker;
     // while (markersArray.length) {
@@ -170,6 +183,14 @@
     return markersArray.push(marker);
   };
 
+  function getRandom_marker(bounds) {
+    var lat_min = bounds.getSouthWest().lat(),
+        lat_range = bounds.getNorthEast().lat() - lat_min,
+        lng_min = bounds.getSouthWest().lng(),
+        lng_range = bounds.getNorthEast().lng() - lng_min;
+
+    return { lat: lat_min + (Math.random() * lat_range), lng: lng_min + (Math.random() * lng_range) };
+  }
   // google.maps.event.addListener(Marker, "dragend", function(event) { 
   //   var lat = event.latLng.lat(); 
   //   var lng = event.latLng.lng(); 
@@ -181,9 +202,12 @@
     return lng_field.val(latLng.lng());
   };
 
-  google.maps.event.addDomListener(window, 'load', initMap);
+  handUpdateFields = function(lat, lng) {
+    lat_field.val(lat);
+    return lng_field.val(lng);
+  };
 
-
+  renderMap();
   // Add field
 
   $("form").on("click", ".remove_fields", function(event) {
