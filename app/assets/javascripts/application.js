@@ -12,5 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require popper
 //= require map
 //= require_tree .

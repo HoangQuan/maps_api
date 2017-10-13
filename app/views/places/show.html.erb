@@ -1,15 +1,16 @@
-<header><h1 class="display-4"><%= @place.title %></h1></header>
+<div class="container-fluid">
+  <header><h1 class="display-4"><%= @place.title %></h1></header>
 
-<p>Address: <%= @place.address %></p>
-<p>Coordinates: <%= @place.latitude %> <%= @place.longitude %></p>
+  <p>Address: <%= @place.address %></p>
+  <p>Coordinates: <%= @place.latitude %> <%= @place.longitude %></p>
 
-<%= link_to 'Edit', edit_place_path(@place) %>
-<div class="#map-container">
-  <div class="card-block">
-    <div id="map" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>"></div>
+  <%= link_to 'Edit', edit_place_path(@place) %>
+  <div class="#map-container">
+    <div class="card-block">
+      <div id="map" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>"></div>
 
-    <input type="text" name="map-address", id="map_address" class="form-control">
+      <input type="text" name="map-address", id="map_address" class="form-control">
+    </div>
   </div>
 </div>
-<%# render 'script' %>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCALxWGU7_sKHEL77Ku_oQdWnqNeVOwCZc&libraries=places"></script>
+
