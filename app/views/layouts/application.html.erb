@@ -6,8 +6,6 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCALxWGU7_sKHEL77Ku_oQdWnqNeVOwCZc&libraries=places"></script>
   </head>
 
   <body>
@@ -15,4 +13,9 @@
       <%= yield %>
     </div>
   </body>
+
+  <footer>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCALxWGU7_sKHEL77Ku_oQdWnqNeVOwCZc&libraries=places"></script>
+
+  </footer>
 </html>

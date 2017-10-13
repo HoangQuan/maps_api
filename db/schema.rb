@@ -13,21 +13,21 @@
 ActiveRecord::Schema.define(version: 20171011082532) do
 
   create_table "green_tees", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.float    "longitude",  limit: 24
-    t.float    "latitude",   limit: 24
+    t.decimal  "longitude",  precision: 64, scale: 14
+    t.decimal  "latitude",   precision: 64, scale: 14
     t.integer  "place_id"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
   end
 
   create_table "places", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "title"
     t.text     "address",    limit: 65535
-    t.float    "latitude",   limit: 24
-    t.float    "longitude",  limit: 24
+    t.decimal  "latitude",                 precision: 64, scale: 14
+    t.decimal  "longitude",                precision: 64, scale: 14
     t.integer  "user_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
   end
 
 end

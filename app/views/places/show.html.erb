@@ -3,8 +3,13 @@
 <p>Address: <%= @place.address %></p>
 <p>Coordinates: <%= @place.latitude %> <%= @place.longitude %></p>
 
-<%= image_tag "http://maps.googleapis.com/maps/api/staticmap?center=#{@place.latitude},#{@place.longitude}&markers=#{@place.latitude},#{@place.longitude}&zoom=7&size=640x400&key=AIzaSyA4BHW3txEdqfxzdTlPwaHsYRSZbfeIcd8",
-              class: 'img-fluid img-rounded', alt: "#{@place.title} on the map"%>
-<div id="map">
-  
+<%= link_to 'Edit', edit_place_path(@place) %>
+<div class="#map-container">
+  <div class="card-block">
+    <div id="map" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>"></div>
+
+    <input type="text" name="map-address", id="map_address" class="form-control">
+  </div>
 </div>
+<%# render 'script' %>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCALxWGU7_sKHEL77Ku_oQdWnqNeVOwCZc&libraries=places"></script>
