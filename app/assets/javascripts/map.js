@@ -6,9 +6,9 @@ $(document).on('ready', function(){
   var map;
   // renderMap = function(){
     function initMap() {
-      if ($('#map').size() > 0) {
-        var center = {lat: $("#map").data('lat'), lng: $("#map").data('lon')}
-        map = new google.maps.Map(document.getElementById('map'), {
+      if ($('#map1').size() > 0) {
+        var center = {lat: $("#map1").data('lat'), lng: $("#map1").data('lon')}
+        map = new google.maps.Map(document.getElementById('map1'), {
           center: center,
           mapTypeId: 'satellite',
           zoom: 16

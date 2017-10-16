@@ -1,59 +1,85 @@
-<div>
-  <%= form_for @place do |f| %>
-    <fieldset class="form-group">
-      <%= f.label :title %>
-      <%= f.text_field :title, class: "form-control" %>
-    </fieldset>
-
-    <fieldset class="form-group">
-      <%= f.label :user_id %>
-      <%= f.text_field :user_id, class: "form-control" %>
-    </fieldset>
-
-    <fieldset class="form-group">
-      <%= f.label :address, 'Address' %>
-      <%= f.text_field :address, class: "form-control" %>
-      <small class="text-muted">You can also enter IP. Your IP is <%= request.ip %></small>
-    </fieldset>
-
-    <div class="form-group row">
-      <div class="col-sm-1">
-        <%= f.label :latitude %>
+<div class="row">
+  <div class="col-lg-7">
+    <!-- Example Bar Chart Card-->
+    <div class="card mb-3">
+      <div class="card-header">
+        <i class="fa fa-map"></i> Map</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="#map-container">
+            <div class="card-block">
+              <div id="map1" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>" style="height: 500px; width:700px;"></div>
+              <input type="text" name="map-address", id="map_address" class="form-control">
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="col-sm-3">
-        <%= f.text_field :latitude, class: "form-control latitude_place#{ @place.id }" %>
-      </div>
-
-      <div class="col-sm-1">
-        <%= f.label :longitude %>
-      </div>
-
-      <div class="col-sm-3">
-        <%= f.text_field :longitude, class: "form-control longitude_place#{ @place.id }" %>
-      </div>
-
-      <div class="col-sm-4">
-        <a href="#" id="find-on-map" class="btn btn-info btn-sm create_marker" data-lat="<%= @place.latitude %>" data-lon="<%= @place.longitude %>" data-markerName='Diem ti' data-id="place<%= @place.id %>">Find on the map</a>
-      </div>
+      <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
     </div>
-    <div>
+    <!-- /Card Columns-->
+  </div>
 
-        <% @place.green_tees.each_with_index do |green_tee, i| %>
-            <%= f.fields_for :green_tees, green_tee do |builder| %>
-                <%= render 'green_tee_fields', f: builder, child_index: i %>
-            <% end %>
-        <% end %>
-        <%= link_to_add_fields 'Add Tee', f, :green_tees %>
+  <div class="col-lg-5">
+    <!-- Example Pie Chart Card-->
+    <div class="card mb-3">
+      <div class="card-header">
+        <i class="fa fa-info"></i> Golf Place Info</div>
+      <div class="card-body">
+        <div>
+          <%= form_for @place do |f| %>
+            <fieldset class="form-group">
+              <%= f.label :title %>
+              <%= f.text_field :title, class: "form-control" %>
+            </fieldset>
+
+            <fieldset class="form-group">
+              <%= f.label :user_id %>
+              <%= f.text_field :user_id, class: "form-control" %>
+            </fieldset>
+
+            <fieldset class="form-group">
+              <%= f.label :address, 'Address' %>
+              <%= f.text_field :address, class: "form-control" %>
+              <small class="text-muted">You can also enter IP. Your IP is <%= request.ip %></small>
+            </fieldset>
+
+            <div class="form-group row">
+              <div class="col-sm-1">
+                <%= f.label :latitude %>
+              </div>
+
+              <div class="col-sm-3">
+                <%= f.text_field :latitude, class: "form-control latitude_place#{ @place.id }" %>
+              </div>
+
+              <div class="col-sm-1">
+                <%= f.label :longitude %>
+              </div>
+
+              <div class="col-sm-3">
+                <%= f.text_field :longitude, class: "form-control longitude_place#{ @place.id }" %>
+              </div>
+
+              <div class="col-sm-4">
+                <a href="#" id="find-on-map" class="btn btn-info btn-sm create_marker" data-lat="<%= @place.latitude %>" data-lon="<%= @place.longitude %>" data-markerName='Diem ti' data-id="place<%= @place.id %>">Find on the map</a>
+              </div>
+            </div>
+            <div>
+
+                <% @place.green_tees.each_with_index do |green_tee, i| %>
+                    <%= f.fields_for :green_tees, green_tee do |builder| %>
+                        <%= render 'green_tee_fields', f: builder, child_index: i %>
+                    <% end %>
+                <% end %>
+                <%= link_to_add_fields 'Add Tee', f, :green_tees %>
+            </div>
+            <%= f.submit 'Add!', class: 'btn btn-primary' %>
+          <% end %>
+        </div>
+      </div>
+      <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
     </div>
-    <%= f.submit 'Add!', class: 'btn btn-primary' %>
-  <% end %>
-</div>
-
-<div class="#map-container">
-  <div class="card-block">
-    <div id="map" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>"></div>
-
-    <input type="text" name="map-address", id="map_address" class="form-control">
   </div>
 </div>
+
+

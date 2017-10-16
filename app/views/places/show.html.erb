@@ -1,13 +1,19 @@
 <div class="container-fluid">
   <header><h1 class="display-4"><%= @place.title %></h1></header>
 
+  <p>Place Name: <%= @place.title %></p>
   <p>Address: <%= @place.address %></p>
-  <p>Coordinates: <%= @place.latitude %> <%= @place.longitude %></p>
+
+  <div id="find-on-map" class="create_marker" data-lat="<%= @place.latitude %>" data-lon="<%= @place.longitude %>" data-markerName='Diem ti' data-id="place<%= @place.id %>"></div>
+
+  <% @place.green_tees.each do |tee| %>
+    <div class="create_marker" data-lat="<%= tee.latitude %>" data-lon="<%= tee.longitude %>" data-markerName='Diem ti' data-id="tee<%= tee.id %>"></div>
+  <% end %>
 
   <%= link_to 'Edit', edit_place_path(@place) %>
   <div class="#map-container">
     <div class="card-block">
-      <div id="map" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>"></div>
+      <div id="map1" data-lat="<%= @place.latitude || 35.652832 %>", data-lon="<%= @place.longitude || 139.839478 %>" style="height: 700px; width:1000px;"></div>
 
       <input type="text" name="map-address", id="map_address" class="form-control">
     </div>
